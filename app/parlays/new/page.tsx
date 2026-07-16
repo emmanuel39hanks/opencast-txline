@@ -6,7 +6,7 @@ import { IconFlash } from "@/lib/icons";
 /**
  * /parlays/new — build a parlay ticket from existing markets. Distinct from
  * /create (which mints new markets): a parlay doesn't create anything tradeable,
- * it bundles YES/NO picks on live pools into one fixed-odds bet.
+ * it bundles YES/NO picks on live pools into one fixed-odds ticket.
  */
 export default function NewParlayPage() {
   return (

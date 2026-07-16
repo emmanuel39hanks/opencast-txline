@@ -73,7 +73,7 @@ export default function CreatePage() {
     volume: number;
   } | null>(null);
 
-  /** Same fixture + same on-chain predicate = the same bet. */
+  /** Same fixture + same on-chain predicate = the same prediction. */
   const findExisting = async (d: Draft) => {
     try {
       const r = await fetch("/api/markets");
@@ -115,7 +115,7 @@ export default function CreatePage() {
     message: string;
     suggestions: string[];
   } | null>(null);
-  // Opening YES probability: TxODDS' line when the bet maps onto it,
+  // Opening YES probability: TxODDS' line when the prediction maps onto it,
   // otherwise the drafting model's estimate. The seed splits at this ratio
   // so the market opens at real odds instead of 50/50.
   const [opening, setOpening] = React.useState<{
@@ -302,7 +302,7 @@ export default function CreatePage() {
           className="mt-4 flex w-full items-center justify-center gap-2 rounded-pill bg-punt-ink py-3.5 text-base font-extrabold text-punt-paper transition-transform hover:-translate-y-0.5 disabled:opacity-40"
         >
           <IconMagic size={16} variant="Bold" color="#F5F1E8" />
-          {busy === "draft" ? "Drafting…" : "Draft bet"}
+          {busy === "draft" ? "Drafting…" : "Draft prediction"}
         </button>
       </div>
 
@@ -455,10 +455,10 @@ export default function CreatePage() {
             </div>
           </div>
 
-          {/* Duplicate guard — same fixture + same predicate = same bet */}
+          {/* Duplicate guard — same fixture + same predicate = same prediction */}
           {existing && (
             <div className="mt-4 rounded-2xl border border-amber-200 bg-amber-50 p-3.5 text-xs font-medium leading-relaxed text-amber-800">
-              <span className="font-bold">This bet is already live.</span>{" "}
+              <span className="font-bold">This prediction is already live.</span>{" "}
               “{existing.question}” has ${formatUsdc(existing.volume)} in its
               pool — creating a duplicate would just split the liquidity.
             </div>

@@ -14,7 +14,7 @@ interface TradeRow {
 
 /**
  * Recent activity on a market — who backed which side, for how much, when.
- * Client-reported after each confirmed bet; renders nothing until the market
+ * Client-reported after each confirmed prediction; renders nothing until the market
  * has trades.
  */
 export function RecentActivity({

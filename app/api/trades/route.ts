@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 /**
- * POST /api/trades — record a confirmed bet (client-reported after the
+ * POST /api/trades — record a confirmed prediction (client-reported after the
  * on-chain transaction lands). Powers the market activity feed and the
  * traders leaderboard; the source of truth for money stays on-chain.
  */

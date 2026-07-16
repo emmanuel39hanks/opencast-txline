@@ -1,9 +1,9 @@
-# OpenCast — provable World Cup betting on Solana
+# OpenCast — provable World Cup prediction markets on Solana
 
 **Live at [opencast.cc](https://www.opencast.cc)** · Solana devnet · powered by
 the [TxLINE](https://txline.txodds.com) data layer by TxODDS.
 
-OpenCast is a betting board anyone can add to. Type a bet in plain English —
+OpenCast is a prediction board anyone can add to. Type a prediction in plain English —
 *"England to score 2+"* — and an AI drafts it into an on-chain market bound to
 a real World Cup fixture. Back YES or NO with USDC at pool odds, or stack
 picks into a parlay. When the final whistle blows, a **cryptographic Merkle
@@ -90,10 +90,3 @@ npx prisma generate
 npm run dev                # http://localhost:3010
 ```
 
-## Docs
-
-- `docs/SUBMISSION.md` — hackathon submission summary + API feedback.
-- `docs/TXLINE_RESEARCH.md` — full integration brief (endpoints, auth,
-  score schema, on-chain validation).
-- `reference/txline/` — TxLINE `txoracle` IDL + types + example auth code
-  (from TxLINE's public docs, kept for attribution and reference).

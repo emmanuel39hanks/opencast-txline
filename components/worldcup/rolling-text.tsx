@@ -2,7 +2,7 @@
 
 /**
  * Edge-to-edge rolling text band — Antigravity-style oversized wordmark.
- * Sits between the silly bets and the schedule as a visual reset.
+ * Sits between the silly predictions and the schedule as a visual reset.
  */
 export function RollingText() {
   const phrases = Array.from({ length: 6 });

@@ -168,13 +168,13 @@ export default function SettingsPage() {
           <div className="px-5">
             <Toggle
               label="Trades on my markets"
-              description="When someone bets on a market you created."
+              description="When someone predicts on a market you created."
               checked={notifications.trades}
               onChange={(v) => setNotifications({ trades: v })}
             />
             <Toggle
               label="Market settlements"
-              description="When a market you bet on settles and there's something to claim."
+              description="When a market you predicted on settles and there's something to claim."
               checked={notifications.disputes}
               onChange={(v) => setNotifications({ disputes: v })}
             />

@@ -27,12 +27,12 @@ import {
 import { cn, formatPercent, formatMoney, formatUsdc } from "@/lib/utils";
 
 /**
- * /portfolio — your bets, claimable winnings, markets you created.
+ * /portfolio — your predictions, claimable winnings, markets you created.
  *
  * Layout (Polymarket-inspired, Punt language):
  *  - "Portfolio" hero + 4-cell summary strip (Value / Cash / P&L / Claimable)
  *  - Tab pills (Positions / Parlays / Claimable / History / My markets)
- *  - Positions as a real table: MARKET · BET · NOW · TO WIN · VALUE · P&L,
+ *  - Positions as a real table: MARKET · STAKE · NOW · TO WIN · VALUE · P&L,
  *    one row per side held, with a Claim button on winning rows.
  */
 export default function PortfolioPage() {
@@ -70,7 +70,7 @@ function SignInPanel({ onSignIn }: { onSignIn: () => void }) {
           <IconWallet size={24} variant="Linear" color="#0A0A0A" />
         </div>
         <h1 className="mt-6 text-2xl font-bold tracking-tight text-punt-ink sm:text-3xl">
-          Sign in to see your bets
+          Sign in to see your predictions
         </h1>
         <p className="mx-auto mt-3 max-w-md text-sm font-medium text-punt-ink/60">
           Your open positions, parlays, claimable winnings, and the markets
@@ -218,7 +218,7 @@ function PortfolioInner({
   const parlayTickets = parlays.data ?? [];
 
   const positions = (portfolio.data ?? []) as unknown as Pos[];
-  // Open bets stay front and center; settled ones (won, lost, claimed)
+  // Open predictions stay front and center; settled ones (won, lost, claimed)
   // move to History so the Positions tab always means "money in play".
   const open = positions.filter((p) => !p.settled);
   const history = positions.filter((p) => p.settled);
@@ -359,14 +359,14 @@ function PortfolioInner({
             isError={portfolio.isError}
             onRetry={portfolio.refetch}
             emptyTitle="No open positions."
-            emptyBody="Settled bets live in History. Pick a market and get back in."
+            emptyBody="Settled predictions live in History. Pick a market and get back in."
           />
         )}
         {tab === "history" && (
           <PositionsTable
             positions={searched(history)}
             emptyTitle="Nothing settled yet."
-            emptyBody="Once a market you bet on resolves, it moves here — wins, losses, and claims."
+            emptyBody="Once a market you predicted on resolves, it moves here — wins, losses, and claims."
           />
         )}
         {tab === "parlays" && (
@@ -376,7 +376,7 @@ function PortfolioInner({
           <PositionsTable
             positions={searched(claimable)}
             emptyTitle="Nothing to claim right now."
-            emptyBody="When a market you bet on resolves in your favour, your winnings appear here."
+            emptyBody="When a market you predicted on resolves in your favour, your winnings appear here."
           />
         )}
         {tab === "my-markets" && (
@@ -570,7 +570,7 @@ function PositionsTable({
   isError,
   onRetry,
   emptyTitle = "No positions yet.",
-  emptyBody = "Pick a market and place your first bet.",
+  emptyBody = "Pick a market and make your first prediction.",
 }: {
   positions: Pos[];
   isLoading?: boolean;
@@ -604,7 +604,7 @@ function PositionsTable({
         <thead>
           <tr className="border-b border-punt-ink/8">
             <Th className="pl-5">Market</Th>
-            <Th align="right">Bet</Th>
+            <Th align="right">Stake</Th>
             <Th align="right">Now</Th>
             <Th align="right">To win</Th>
             <Th align="right">Value</Th>
@@ -651,8 +651,8 @@ function PositionTr({ row }: { row: Row }) {
   const settled = Boolean(pos.settled);
   const payout = pos.settledPayout ?? pos.currentValue;
 
-  // Per-side value + P&L: open bets are marked at stake (parimutuel — you
-  // can't sell out); settled bets at actual payout (0 once claimed — the
+  // Per-side value + P&L: open predictions are marked at stake (parimutuel —
+  // you can't sell out); settled ones at actual payout (0 once claimed — the
   // money lives in cash then — and 0 when the side lost). P&L stays
   // realized either way.
   const value = settled ? (won ? (pos.claimed ? 0 : payout) : 0) : stake;
@@ -705,7 +705,7 @@ function PositionTr({ row }: { row: Row }) {
         </Link>
       </td>
 
-      {/* Bet */}
+      {/* Stake */}
       <Td>${formatMoney(stake)}</Td>
 
       {/* Now (current implied odds for this side) */}

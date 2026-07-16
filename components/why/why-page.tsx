@@ -147,7 +147,7 @@ function FinalCta() {
           Try it for yourself.
         </p>
         <p className="mt-1 max-w-md text-sm font-medium text-punt-paper/65">
-          Place a bet on a live market in under a minute. Free testnet USDC
+          Make a prediction on a live market in under a minute. Free testnet USDC
           included.
         </p>
       </div>

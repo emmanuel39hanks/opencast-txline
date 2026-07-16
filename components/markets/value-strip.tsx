@@ -11,7 +11,7 @@ import {
 /**
  * Vertical 3-card strip used in the /markets featured-hero right column.
  *
- * Each card is a paper-white outlined tile — matches the bet card
+ * Each card is a paper-white outlined tile — matches the market card
  * language elsewhere on the site. Click → dedicated explainer page
  * under /why.
  */

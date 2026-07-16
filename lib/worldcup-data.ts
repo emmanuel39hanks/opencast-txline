@@ -1,7 +1,7 @@
 /**
  * Curated World Cup 2026 market templates for the /worldcup landing.
  *
- * Used by the silly-bets grid, the match schedule, and the bracket
+ * Used by the silly-predictions grid, the match schedule, and the bracket
  * preview. Pre-tournament: questions can be split between "serious"
  * (will-Argentina-win) and "silly" (will-anyone-do-SIUUU) for the fun
  * filter pill on the page. Once the actual draw lands, swap the
@@ -56,7 +56,7 @@ export const WORLDCUP_BETS: WorldCupBet[] = [
     yesPct: 72,
   },
 
-  // ─── Silly bets ───────────────────────────────────────────────────────────
+  // ─── Silly predictions ───────────────────────────────────────────────────────────
   {
     id: "siuuu",
     question: "Will any player celebrate with a SIUUU?",

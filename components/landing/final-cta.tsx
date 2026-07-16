@@ -43,7 +43,7 @@ export function FinalCta() {
             onClick={onCta}
             className="rounded-pill bg-punt-lime px-10 py-4 text-base font-extrabold text-punt-ink transition-transform hover:-translate-y-0.5 sm:text-lg"
           >
-            {authenticated ? "Open the app" : "Start betting free"}
+            {authenticated ? "Open the app" : "Start predicting free"}
           </button>
         </div>
       </div>

@@ -14,8 +14,8 @@ import { WorldCupFinalCta } from "@/components/worldcup/final-cta";
  * Composition (top → bottom):
  *   1. Hero — split layout, featured market preview
  *   2. Countdown band — kickoff timer
- *   3. Silly bets grid — curated templates
- *   4. Rolling text band — "World Cup 2026 · Bet the chaos · On-chain"
+ *   3. Silly predictions grid — curated templates
+ *   4. Rolling text band — "World Cup 2026 · Predict the chaos · On-chain"
  *   5. Match schedule — row layout
  *   6. Settlement stack — TxLINE + Solana + USDC
  *   7. Lime final CTA

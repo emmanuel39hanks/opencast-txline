@@ -22,7 +22,7 @@ const ITEMS = [
     a: "Every market has a proof page: the final score, the exact stat that settled it, and every hash connecting it to the on-chain root. If the proof doesn't verify, the market can't pay out.",
   },
   {
-    q: "What can I bet on?",
+    q: "What can I predict?",
     a: "Anything TxLINE can prove from match data: winners, draws, goals, corners, cards, half-time lines, winning margins — on any of the 104 World Cup matches. Or stack picks into a parlay.",
   },
   {

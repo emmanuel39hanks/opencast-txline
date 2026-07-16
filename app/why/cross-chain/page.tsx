@@ -25,7 +25,7 @@ export default function WhySettlementPage() {
             </p>
           ),
           bullets: [
-            "Native SPL USDC as the betting currency.",
+            "Native SPL USDC as the settlement currency.",
             "Parimutuel YES/NO pools; pricing is the pool ratio.",
             "Position accounts track each wallet's stake on-chain.",
           ],

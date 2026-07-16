@@ -15,9 +15,9 @@ import { LandingFooter } from "@/components/landing/landing-footer";
  *   2. Hero — plain-English pitch + the real board: a live market card,
  *      a settled receipt, the World Cup itself
  *   3. Live markets grid (real data — the product sells itself)
- *   4. How it works (type a bet / back a side / proof settles it)
- *   5. Feature triptych (create · bet & parlay · trustless settle)
- *   6. Bet preview (market card + receipt + trade panel bento)
+ *   4. How it works (type a prediction / back a side / proof settles it)
+ *   5. Feature triptych (create · predict & parlay · trustless settle)
+ *   6. Try-it demo (market card + trade panel)
  *   7. Why it's different (bento)
  *   8. The rails (Solana + TxLINE by TxODDS — real logos, real addresses)
  *   9. FAQ (plain English, honest)

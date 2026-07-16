@@ -350,7 +350,7 @@ export function MarketActions({
                 <IconShield size={14} variant="Linear" color="#0A0A0A" />
                 <span>
                   <span className="font-bold text-punt-ink">
-                    Bets ride to settlement.
+                    Predictions ride to settlement.
                   </span>{" "}
                   Stakes pool together and pay out pro-rata the moment the match
                   settles against TxLINE&apos;s proof — no order book, nothing to

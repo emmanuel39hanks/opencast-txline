@@ -35,11 +35,11 @@ export function Rails() {
             <img src="/landing/solana-logo.png" alt="Solana" className="h-7 w-7" />
             <span className="text-2xl font-black tracking-tight">Solana</span>
             <span className="rounded-pill bg-punt-paper/10 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-punt-paper/60">
-              Markets · bets · payouts
+              Markets · predictions · payouts
             </span>
           </div>
           <p className="mt-4 max-w-md text-sm font-medium leading-relaxed text-punt-paper/65">
-            Every market is a program account. Every bet is a token transfer
+            Every market is a program account. Every prediction is a token transfer
             into its pool. Settlement and claims are on-chain instructions
             anyone can read — there is no OpenCast database deciding who gets
             paid.

@@ -16,7 +16,7 @@ import type { Market } from "@/lib/types";
 /**
  * Hero — full-bleed floodlit stadium running behind the navbar. Centered:
  * one short headline, one line of copy, a search bar, then a row of real
- * bet cards from the board.
+ * prediction cards from the board.
  */
 export function Hero() {
   const router = useRouter();
@@ -105,7 +105,7 @@ export function Hero() {
           </div>
         </motion.div>
 
-        {/* Live bet cards */}
+        {/* Live prediction cards */}
         <motion.div
           initial={{ opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}

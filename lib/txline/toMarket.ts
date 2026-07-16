@@ -112,7 +112,7 @@ export function fixtureToMarket(
     matchState,
     kickoffMs,
     // Predicate: for a created market, the on-chain account is the truth (it
-    // may be a prop bet); otherwise default to the match-winner strategy the
+    // may be a prop market); otherwise default to the match-winner strategy the
     // create button would use.
     statKeyA: onchain ? Number(onchain.statKeyA ?? strat.statKeyA) : strat.statKeyA,
     statKeyB: onchain ? Number(onchain.statKeyB ?? strat.statKeyB) : strat.statKeyB,

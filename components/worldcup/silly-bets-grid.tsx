@@ -13,9 +13,9 @@ const TONE_TABS: { label: string; value: WorldCupTone | "all" }[] = [
 ];
 
 /**
- * The fun centerpiece of /worldcup — a 4-column grid of curated bet
+ * The fun centerpiece of /worldcup — a 4-column grid of curated prediction
  * cards in mixed tints. Filter pill row lets you switch between Big
- * questions and Silly bets.
+ * questions and silly predictions.
  */
 export function SillyBetsGrid() {
   const [tab, setTab] = React.useState<WorldCupTone | "all">("all");

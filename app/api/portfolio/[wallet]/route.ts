@@ -73,7 +73,7 @@ export async function GET(
     const positions = created.map((dbm, i) => {
       const m = marketAccs[i];
       const p = posAccs[i];
-      if (!m || !p) return null; // market missing or user never bet here
+      if (!m || !p) return null; // market missing or user never predicted here
       {
         const yes = Number(p.yesAmount) / 1e6;
         const no = Number(p.noAmount) / 1e6;

@@ -17,7 +17,7 @@ function keyFor(kind: Kind, isP1: boolean, period = 0) {
   return period * 1000 + K[kind][isP1 ? 0 : 1];
 }
 
-// Every bet type below compiles to a SINGLE `validate_stat_v2` predicate:
+// Every prediction type below compiles to a SINGLE `validate_stat_v2` predicate:
 //   single stat  (stat_key_b == 0):  a            <cmp> threshold
 //   binary stat  (stat_key_b != 0):  (a − b)      <cmp> threshold
 // so every market — winner or "funny" prop — is provable the same way.
@@ -51,9 +51,9 @@ const BET_TYPES: BetType[] = [
 interface DraftPick {
   fixtureId: number;
   betType: BetType;
-  /** Team the bet is about (must match a participant); ignored for draw. */
+  /** Team the prediction is about (must match a participant); ignored for draw. */
   subject: string;
-  /** Threshold count for over/spread/booking bets, e.g. 2 for "2+ goals". */
+  /** Threshold count for over/spread/booking predictions, e.g. 2 for "2+ goals". */
   line: number;
   /** Model's estimate of the YES outcome's probability (0..1) — the parlay quote. */
   impliedProb: number;
@@ -65,9 +65,9 @@ interface DraftPick {
  * POST /api/draft { question } — AI market intake.
  *
  * The model matches a natural-language question to a live World Cup fixture and
- * classifies it into a supported bet type. The TxLINE settlement predicate
+ * classifies it into a supported market type. The TxLINE settlement predicate
  * (stat keys / threshold / comparison) is then derived DETERMINISTICALLY here —
- * the LLM never invents settlement math, it only picks the fixture, bet type,
+ * the LLM never invents settlement math, it only picks the fixture, market type,
  * team, and line. Every predicate is a single `validate_stat_v2` check, so
  * every market — moneyline or a "funny" prop — is provable on-chain the same way.
  */
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
         role: "system",
         content:
           "You turn a fan's natural-language question into a verifiable World Cup prediction market. " +
-          "Pick the single fixture it's about, classify the bet type, the team, and any line. " +
+          "Pick the single fixture it's about, classify the market type, the team, and any line. " +
           "Respond ONLY with JSON: " +
           '{"fixtureId":number,"betType":string,"subject":string,"line":number,"impliedProb":number,"reasoning":string,"confidence":number}. ' +
           "`impliedProb` is your best estimate (0..1) of the probability the YES outcome actually happens — used to price a parlay leg. " +
@@ -115,7 +115,7 @@ export async function POST(req: Request) {
           "- 'first_half_winner': a team leads at half-time\n" +
           "- 'first_half_goal': a team scores in the first half\n" +
           "`subject` MUST be exactly one team name from the chosen fixture (ignored for 'draw'). " +
-          "`line` is the number for over/spread/booking bets (e.g. 2 for '2+ goals', 2 for 'win by 2+'); use 0 otherwise. " +
+          "`line` is the number for over/spread/booking predictions (e.g. 2 for '2+ goals', 2 for 'win by 2+'); use 0 otherwise. " +
           "confidence is 0..1; if nothing matches well pick the closest fixture with confidence below 0.4.",
       },
       { role: "user", content: `Question: ${question}\n\nFixtures:\n${JSON.stringify(menu)}` },
@@ -140,7 +140,7 @@ export async function POST(req: Request) {
           ok: false as const,
           unprovable: true as const,
           message:
-            "Markets settle against TxLINE match stats — goals, cards, corners, halves — so the bet needs a team and a provable stat.",
+            "Markets settle against TxLINE match stats — goals, cards, corners, halves — so the prediction needs a team and a provable stat.",
           suggestions: [
             "Will Argentina win the final?",
             "France to score 2+ goals",
@@ -186,7 +186,7 @@ export async function POST(req: Request) {
 /**
  * Deterministic fallback when the model flakes: find the team named in the
  * question, prefer its LATEST fixture (so "the final" lands on the final),
- * and classify the bet type by keywords. Returns null when no team matches —
+ * and classify the market type by keywords. Returns null when no team matches —
  * the route then answers with guidance instead of an error.
  */
 function fallbackPick(

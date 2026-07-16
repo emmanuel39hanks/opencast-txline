@@ -263,7 +263,7 @@ export function useSettlement() {
     [address, send],
   );
 
-  /** Read the caller's position on a market (null if they never bet). */
+  /** Read the caller's position on a market (null if they never predicted). */
   const readPosition = React.useCallback(
     async (marketStr: string) => {
       if (!address) return null;

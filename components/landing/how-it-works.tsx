@@ -10,7 +10,7 @@ export function HowItWorks() {
   const steps = [
     {
       n: "01",
-      title: "Type your bet",
+      title: "Type your prediction",
       body: "“England to score 2+.” The AI turns it into a market with an on-chain rule. If the stat can't be proven from match data, the market can't exist — that's the filter.",
     },
     {
@@ -27,7 +27,7 @@ export function HowItWorks() {
 
   return (
     <div>
-      <SectionHeading eyebrow="How it works" title="Bet in plain English." />
+      <SectionHeading eyebrow="How it works" title="Predict in plain English." />
       <div className="grid gap-10 border-t border-punt-ink/10 pt-10 md:grid-cols-3 md:gap-0 md:divide-x md:divide-punt-ink/10">
         {steps.map((s, i) => (
           <Reveal key={s.n} delay={i * 0.12} className="md:px-10 md:first:pl-0 md:last:pr-0">

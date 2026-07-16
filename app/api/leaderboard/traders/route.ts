@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** GET /api/leaderboard/traders → top wallets by recorded bet volume. */
+/** GET /api/leaderboard/traders → top wallets by recorded prediction volume. */
 export async function GET() {
   try {
     const rows = await prisma.trade.groupBy({
