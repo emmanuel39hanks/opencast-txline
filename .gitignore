@@ -22,5 +22,5 @@ test-ledger
 .env
 tsconfig.tsbuildinfo
 
-# Internal material — not for the public repo
 docs/DEMO_SCRIPT.md
+docs/SUBMISSION.md
