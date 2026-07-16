@@ -57,10 +57,10 @@ export function Rails() {
             </span>
           </div>
           <p className="mt-4 max-w-md text-sm font-medium leading-relaxed text-punt-paper/65">
-            TxODDS feeds live sports data to the betting industry. TxLINE makes
-            it provable: every score update is sequenced, hashed into a Merkle
-            tree, and anchored on Solana — so a match result can be verified,
-            not just believed.
+            TxODDS supplies live sports data to the industry&apos;s biggest
+            operators. TxLINE makes it provable: every score update is
+            sequenced, hashed into a Merkle tree, and anchored on Solana — so
+            a match result can be verified, not just believed.
           </p>
           <AddressChip label="txoracle · validate_stat_v2" addr={TXORACLE} />
         </div>
