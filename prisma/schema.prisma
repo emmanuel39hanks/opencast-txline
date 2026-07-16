@@ -1,0 +1,89 @@
+// OpenCast (TxLINE) — Prisma schema on Neon Postgres.
+// Off-chain index for user-created markets. On-chain escrow/positions live in
+// the Solana settlement program; this stores the AI-drafted metadata + the
+// TxLINE binding (fixture + statKeys + strategy) keyed to the on-chain market.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("POSTGRES_PRISMA_URL")
+  directUrl = env("POSTGRES_URL_NON_POOLING")
+}
+
+model Market {
+  id          String   @id @default(cuid())
+  // TxLINE binding
+  fixtureId   Int
+  statKeys    Int[]
+  strategy    Json
+  // Display
+  question    String
+  category    String   @default("sports")
+  yesLabel    String
+  noLabel     String
+  imageUrl    String?
+  // Ownership / chain
+  creator     String // wallet base58
+  marketPda   String? @unique // on-chain escrow PDA
+  createTxSig String?
+  // Lifecycle
+  status      String   @default("ACTIVE") // ACTIVE | RESOLVED | CANCELLED
+  outcome     String? // YES | NO
+  settleTxSig String?
+  /// Snapshot of the TxLINE Merkle proof taken at settlement, so receipts
+  /// keep working even if TxLINE API access ends.
+  proofJson   Json?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([fixtureId])
+  @@index([creator])
+  @@index([status])
+}
+
+/// Pool price snapshot — written by the keeper sweep so odds charts plot
+/// real history instead of a synthetic walk.
+model PricePoint {
+  id        Int      @id @default(autoincrement())
+  marketPda String
+  priceYes  Float
+  ts        DateTime @default(now())
+
+  @@index([marketPda, ts])
+}
+
+/// One placed bet — client-reported after the on-chain transaction confirms.
+/// Powers the market activity feed and the traders leaderboard.
+model Trade {
+  id        Int      @id @default(autoincrement())
+  marketPda String
+  wallet    String
+  side      Int // 1 YES · 2 NO
+  amount    Int // USDC (6dp)
+  txSig     String?
+  ts        DateTime @default(now())
+
+  @@index([marketPda, ts])
+  @@index([wallet])
+}
+
+/// A user's parlay ticket — fixed-odds bundle of picks, paid from the treasury
+/// bankroll only if every leg's TxLINE proof holds.
+model ParlayBet {
+  id        String   @id @default(cuid())
+  betPda    String   @unique
+  idSeed    String // the on-chain `id` pubkey (PDA seed)
+  owner     String // wallet base58
+  stake     Int // USDC (6dp)
+  payout    Int // USDC (6dp) — stake × multiplier
+  legs      Json // [{ fixtureId, statKeyA, statKeyB, threshold, comparison, expected, question, betTypeLabel, betType, yesLabel, home, away, priceYes }]
+  settled   Boolean  @default(false)
+  won       Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([owner])
+}

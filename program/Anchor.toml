@@ -1,0 +1,17 @@
+[toolchain]
+
+[features]
+resolution = true
+skip-lint = false
+
+[programs.devnet]
+opencast_settlement = "4pCM1Xbd4qPEPjtV1YKNPi1P6j8TmfZ2mamwGc7FB2fU"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "devnet"
+wallet = "../_keys/service-keypair.json"
+
+[scripts]
