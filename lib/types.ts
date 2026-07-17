@@ -304,7 +304,11 @@ export interface DraftResult {
 }
 
 export interface MarketFilters {
-  status?: MarketStatus | "all";
+  /**
+   * On-chain status ("ACTIVE"/"RESOLVED") or a match-phase shortcut:
+   * "open" = upcoming|live, "ended" = full-time awaiting proof, "settled".
+   */
+  status?: MarketStatus | "all" | "open" | "ended" | "settled";
   category?: MarketCategory | "all";
   search?: string;
   sort?: "volume" | "newest" | "ending_soon";

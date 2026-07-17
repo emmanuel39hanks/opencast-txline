@@ -51,6 +51,12 @@ export function MarketActions({
   const m = market as any;
   const created = Boolean(m.marketPda);
   const resolved = market.status === "RESOLVED";
+  // Match phase gates the panel: once the match ends the result is known, so
+  // buying (or creating) would let latecomers dilute honest winners. Ended
+  // markets lock to "awaiting proof" until the keeper settles them.
+  const phase: "upcoming" | "live" | "ended" | "settled" =
+    (m.matchState as "upcoming" | "live" | "ended" | "settled" | undefined) ??
+    (resolved ? "settled" : "upcoming");
   const outcome: string | undefined = m.finalOutcome;
   const yesPct = Math.round((market.priceYes ?? 0.5) * 100);
   const yesLabel = m.yesLabel ?? "Yes";
@@ -235,6 +241,14 @@ export function MarketActions({
       </div>
 
       {!created ? (
+        phase === "ended" ? (
+          <div className="mt-4 rounded-2xl bg-punt-cream/60 p-4 text-sm font-medium leading-relaxed text-punt-ink/60">
+            <span className="font-bold text-punt-ink">
+              This match has finished.
+            </span>{" "}
+            Markets can only be created before the result is known.
+          </div>
+        ) : (
         <div className="mt-4">
           <p className="text-xs font-medium leading-relaxed text-punt-ink/60">
             No one has created this market yet. Seed it with 20 USDC and it goes
@@ -250,6 +264,7 @@ export function MarketActions({
             <IconArrowRight size={16} variant="Linear" color="#0A0A0A" />
           </button>
         </div>
+        )
       ) : resolved ? (
         <div className="mt-4 space-y-3">
           <div className="rounded-2xl bg-punt-ink p-4 text-center text-punt-paper">
@@ -285,6 +300,57 @@ export function MarketActions({
               You didn&apos;t back this market.
             </div>
           )}
+        </div>
+      ) : phase === "ended" ? (
+        <div className="mt-4 space-y-3">
+          <div className="rounded-2xl bg-amber-50 p-4">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-amber-700">
+              Full-time — predictions locked
+            </div>
+            <p className="mt-1.5 text-xs font-medium leading-relaxed text-amber-800">
+              The result is in. The market settles automatically the moment
+              TxLINE anchors the score&apos;s Merkle proof — no admin, no
+              button. Winners claim right here.
+            </p>
+          </div>
+
+          {stake > 0 && (
+            <div className="overflow-hidden rounded-2xl border border-punt-ink/8">
+              <div className="border-b border-punt-ink/8 bg-punt-cream/50 px-4 py-2 text-[10px] font-bold uppercase tracking-wider text-punt-ink/45">
+                Your ticket — rides to settlement
+              </div>
+              <div className="divide-y divide-punt-ink/[0.05]">
+                {(position?.yesAmount ?? 0) > 0 && (
+                  <SellRow
+                    label={yesLabel}
+                    tone="yes"
+                    stake={position!.yesAmount}
+                    pct={yesPct}
+                  />
+                )}
+                {(position?.noAmount ?? 0) > 0 && (
+                  <SellRow
+                    label={noLabel}
+                    tone="no"
+                    stake={position!.noAmount}
+                    pct={100 - yesPct}
+                  />
+                )}
+              </div>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={settle}
+            disabled={busy === "settle"}
+            className="flex w-full items-center justify-center gap-2 rounded-pill border border-punt-ink/15 bg-punt-paper py-2.5 text-sm font-bold text-punt-ink transition-colors hover:bg-punt-ink/5 disabled:opacity-50"
+          >
+            <IconShield size={14} variant="Linear" color="#0A0A0A" />
+            {busy === "settle"
+              ? "Settling via TxLINE proof…"
+              : "Settle now with the TxLINE proof"}
+          </button>
         </div>
       ) : (
         <div className="mt-4 space-y-3.5">
@@ -457,19 +523,6 @@ export function MarketActions({
                   ~${payout.toFixed(2)}
                 </span>
               </div>
-
-              {/* Settle (keeper) */}
-              <button
-                type="button"
-                onClick={settle}
-                disabled={busy === "settle"}
-                className="flex w-full items-center justify-center gap-2 rounded-pill border border-punt-ink/15 bg-punt-paper py-2.5 text-sm font-bold text-punt-ink transition-colors hover:bg-punt-ink/5 disabled:opacity-50"
-              >
-                <IconShield size={14} variant="Linear" color="#0A0A0A" />
-                {busy === "settle"
-                  ? "Settling via TxLINE proof…"
-                  : "Settle now (match ended)"}
-              </button>
             </>
           )}
         </div>

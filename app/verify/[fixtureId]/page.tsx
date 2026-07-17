@@ -339,6 +339,29 @@ function VerifyInner({ fixtureId }: { fixtureId: string }) {
                 </div>
               )}
 
+              {/* Transparency: a handful of early markets settled against a
+                  provisional (pre-final) record before the final-whistle
+                  selection + independent Merkle gate existed. The proof shown
+                  here is the true full-time state, so the contradiction is
+                  visible — we'd rather show it than hide it. */}
+              {settled &&
+                data.impliedOutcome &&
+                data.marketOutcome &&
+                data.impliedOutcome.toUpperCase() !==
+                  data.marketOutcome.toUpperCase() && (
+                  <div className="mt-3 rounded-2xl bg-amber-50 px-4 py-3 text-xs font-medium leading-relaxed text-amber-800">
+                    <span className="font-bold">
+                      This market settled early, against a provisional record.
+                    </span>{" "}
+                    It was resolved before our keeper required proofs from
+                    at/after the final whistle (TxLINE snapshots arrive
+                    unordered — a lesson now baked into the settlement gate).
+                    The full-time proof above shows the true final state; the
+                    on-chain outcome is immutable, so we show both rather than
+                    rewrite history.
+                  </div>
+                )}
+
               {(data.marketsOnFixture ?? 0) > 1 && (
                 <p className="mt-3 text-[11px] font-medium text-punt-ink/45">
                   {data.marketsOnFixture} markets settle against this fixture&apos;s

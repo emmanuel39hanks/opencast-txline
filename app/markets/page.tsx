@@ -9,7 +9,6 @@ import { useMarkets } from "@/lib/hooks/useMarkets";
 import type {
   MarketCategory,
   MarketFilters,
-  MarketStatus,
   Market,
 } from "@/lib/types";
 import {
@@ -86,15 +85,13 @@ function MarketsPageInner() {
   const { data, isLoading, isError, refetch } = useMarkets(filters);
   const markets = data ?? [];
 
-  // Pick the top market by volume as the featured hero (only when category
-  // is "all" and there's no search — otherwise the grid dominates).
+  // Pick the featured hero (only when category is "all" and there's no
+  // search — otherwise the grid dominates). listMarkets ranks live →
+  // upcoming → settled → awaiting-proof, so the first entry is already the
+  // most compelling market on the board.
   const isUnfiltered =
     filters.category === "all" && (filters.search ?? "").length === 0;
-  // Feature the top tradeable (non-settled) market; a settled match makes a
-  // poor hero. Fall back to the top market only if everything is settled.
-  const featured = isUnfiltered
-    ? (markets.find((m) => m.matchState !== "settled") ?? markets[0])
-    : undefined;
+  const featured = isUnfiltered ? markets[0] : undefined;
   const slugOf = (m: Market) => (m as { slug?: string }).slug ?? String(m.id);
   const rest = featured
     ? markets.filter((m) => slugOf(m) !== slugOf(featured))
@@ -138,12 +135,13 @@ function MarketsPageInner() {
           <FilterSelect
             value={filters.status ?? "all"}
             onChange={(v) =>
-              setFilters((f) => ({ ...f, status: v as MarketStatus | "all" }))
+              setFilters((f) => ({ ...f, status: v as MarketFilters["status"] }))
             }
             options={[
               { label: "All statuses", value: "all" },
-              { label: "Active", value: "ACTIVE" },
-              { label: "Resolved", value: "RESOLVED" },
+              { label: "Open", value: "open" },
+              { label: "Awaiting proof", value: "ended" },
+              { label: "Settled", value: "settled" },
             ]}
           />
           <FilterSelect

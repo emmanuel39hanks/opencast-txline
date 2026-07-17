@@ -78,12 +78,28 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "question required" }, { status: 400 });
     }
 
-    const fixtures = await getAllTournamentFixtures();
-    if (!fixtures.length) {
+    const allFixtures = await getAllTournamentFixtures();
+    if (!allFixtures.length) {
       return NextResponse.json(
         { error: "No World Cup fixtures available right now." },
         { status: 409 },
       );
+    }
+
+    // Markets can only be created before kickoff — once the ball rolls the
+    // result starts leaking, and after full-time it's known. Filter the
+    // fixture menu down to matches that haven't started yet.
+    const fixtures = allFixtures.filter(
+      (fx) => new Date(fx.StartTime).getTime() > Date.now(),
+    );
+    if (!fixtures.length) {
+      return NextResponse.json({
+        ok: false as const,
+        unprovable: true as const,
+        message:
+          "Every World Cup fixture has kicked off or finished — markets can only be created before kickoff, so there's nothing left to predict this tournament. Existing markets still settle and pay out automatically.",
+        suggestions: [],
+      });
     }
 
     const menu = fixtures.slice(0, 110).map((fx) => ({
@@ -140,7 +156,7 @@ export async function POST(req: Request) {
           ok: false as const,
           unprovable: true as const,
           message:
-            "Markets settle against TxLINE match stats — goals, cards, corners, halves — so the prediction needs a team and a provable stat.",
+            "Markets settle against TxLINE match stats — goals, cards, corners, halves — so the prediction needs a team and a provable stat on an upcoming fixture (markets lock at kickoff).",
           suggestions: [
             "Will Argentina win the final?",
             "France to score 2+ goals",

@@ -5,6 +5,7 @@ import {
   getStatValidation,
   isFinal,
 } from "@/lib/txline/client";
+import { findAnchoredProof } from "@/lib/txline/proof";
 import { statKeyLabel, describePredicate } from "@/lib/txline/predicate";
 import { verifyProofChain } from "@/lib/txline/merkle";
 import { prisma } from "@/lib/db";
@@ -61,14 +62,22 @@ export async function GET(
     let finalNow = false;
     let fromSnapshot = false;
     try {
-      scores = await getScoreSnapshot(fid);
+      // The snapshot array is NOT chronologically ordered — sort by Seq so
+      // "latest" and player facts mean what they say.
+      scores = (await getScoreSnapshot(fid))
+        .slice()
+        .sort((a, b) => Number(a.Seq) - Number(b.Seq));
       if (scores.length) {
-        const latest = scores[scores.length - 1];
-        seq = latest.Seq;
         // Finality markers (game_finalised / GamePhase F) can land
         // mid-snapshot, followed by coverage updates — scan the whole history.
         finalNow = scores.some((r) => isFinal(r));
-        proof = await getStatValidation(fid, seq, statKeys);
+        // Same selection the keeper settles with: newest anchored,
+        // self-consistent proof, never older than the final whistle.
+        const found = await findAnchoredProof(fid, statKeys);
+        if (found) {
+          proof = found.proof;
+          seq = found.seq;
+        }
       }
     } catch {
       /* fall through to the stored snapshot */

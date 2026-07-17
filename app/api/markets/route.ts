@@ -50,9 +50,16 @@ export async function GET() {
 
     // 1. Fixture-backed entries: all created markets on the fixture, or a
     //    single "uncreated" template entry when nobody has made one yet.
+    //    Templates are only offered while the match can still be predicted —
+    //    a full-time fixture nobody made a market on is dead weight.
+    const MATCH_MS = 150 * 60 * 1000;
+    const now = Date.now();
     const fromFixtures = fixtures.flatMap((fx) => {
       const dbms = createdByFixture.get(fx.FixtureId);
-      if (!dbms?.length) return [fixtureToMarket(fx, null, null)];
+      if (!dbms?.length) {
+        const ended = new Date(fx.StartTime).getTime() + MATCH_MS < now;
+        return ended ? [] : [fixtureToMarket(fx, null, null)];
+      }
       return dbms.map((dbm) =>
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         fixtureToMarket(fx, dbm as any, onchainByPda.get(dbm.marketPda!) as any),

@@ -226,11 +226,43 @@ export async function listMarkets(
     const q = filters.search.toLowerCase();
     markets = markets.filter((m) => m.question.toLowerCase().includes(q));
   }
-  if (filters.sort === "ending_soon") {
-    markets = [...markets].sort(
-      (a, b) => new Date(a.endTime).getTime() - new Date(b.endTime).getTime(),
+
+  // Match phase — the board filters and ranks by phase, not just on-chain
+  // status: a market can be unsettled while its match already ended.
+  const phaseOf = (m: Market): "live" | "upcoming" | "settled" | "ended" => {
+    const ms = (m as unknown as { matchState?: string }).matchState;
+    if (ms === "live" || ms === "upcoming" || ms === "settled" || ms === "ended")
+      return ms;
+    return m.status === "RESOLVED" ? "settled" : "upcoming";
+  };
+  if (filters.status && filters.status !== "all") {
+    const s = filters.status;
+    markets = markets.filter((m) =>
+      s === "open"
+        ? phaseOf(m) === "upcoming" || phaseOf(m) === "live"
+        : s === "ended" || s === "settled"
+          ? phaseOf(m) === s
+          : m.status === s,
     );
   }
+
+  // Rank: live first, then upcoming (tradeable), then settled receipts, then
+  // full-time markets still awaiting their proof. The chosen sort orders
+  // within each phase.
+  const PHASE_RANK = { live: 0, upcoming: 1, settled: 2, ended: 3 } as const;
+  const kickoff = (m: Market) =>
+    (m as unknown as { kickoffMs?: number }).kickoffMs ??
+    new Date(m.endTime).getTime();
+  const vol = (m: Market) => m.totalVolumeUsdc ?? 0;
+  const sort = filters.sort ?? "volume";
+  markets = [...markets].sort((a, b) => {
+    const pr = PHASE_RANK[phaseOf(a)] - PHASE_RANK[phaseOf(b)];
+    if (pr !== 0) return pr;
+    if (sort === "ending_soon") return kickoff(a) - kickoff(b);
+    if (sort === "newest") return kickoff(b) - kickoff(a);
+    return vol(b) - vol(a) || kickoff(a) - kickoff(b);
+  });
+
   if (opts?.limit) markets = markets.slice(0, opts.limit);
   return markets;
 }

@@ -7,14 +7,36 @@
  */
 import { BN, web3 } from "@coral-xyz/anchor";
 import { getScoreSnapshot, getStatValidation } from "./client";
+import { verifyProofChain } from "./merkle";
 import type { TxProofNode, TxStatValidation } from "./types";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
+/** Full-time / after-ET / after-pens markers, per the soccer-feed docs. */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isFinalRecord(r: any): boolean {
+  if (String(r?.Action) === "game_finalised") return true;
+  const phase = String(r?.GamePhase ?? "");
+  if (phase === "F" || phase === "FET" || phase === "FPE") return true;
+  const st = Number(r?.StatusId ?? 0);
+  return st === 5 || st === 10 || st === 13;
+}
+
 /**
- * Walk back from the latest score record until a stat-validation proof is
- * available (very recent records aren't anchored on-chain yet). Returns the
- * proof + the seq it came from, or null.
+ * Find the newest score record with an anchored, self-consistent proof.
+ *
+ * Two hard-won production lessons live here:
+ *  1. The snapshot array is NOT chronologically ordered — records arrive in
+ *     arbitrary order, so we sort by Seq ourselves. (Walking the raw array
+ *     "backwards" once handed us a mid-match 0–0 record as "latest".)
+ *  2. Once a fixture has a full-time record, settlement must only ever prove
+ *     a record at/after that final whistle — an earlier seq would prove a
+ *     provisional score. Post-final amends may still correct stats, so we
+ *     prefer the newest seq and walk back no further than full-time.
+ *
+ * Each candidate proof is recomputed through the independent Merkle gate
+ * before it's accepted: a proof that doesn't reconcile with its own summary
+ * root is skipped (we've observed TxLINE serve such records), never settled.
  */
 export async function findAnchoredProof(
   fixtureId: number,
@@ -22,13 +44,25 @@ export async function findAnchoredProof(
   lookback = 60,
 ): Promise<{ proof: TxStatValidation; seq: number } | null> {
   const snap = await getScoreSnapshot(fixtureId);
-  for (let i = snap.length - 1; i >= 0 && i >= snap.length - lookback; i--) {
-    const seq = snap[i].Seq;
+  const seqsAsc = [...snap]
+    .sort((a, b) => Number(a.Seq) - Number(b.Seq))
+    .map((r) => ({ seq: Number(r.Seq), final: isFinalRecord(r) }));
+  const finalSeq = seqsAsc.filter((r) => r.final).map((r) => r.seq).pop();
+  const candidates = seqsAsc
+    .map((r) => r.seq)
+    .filter((s) => (finalSeq == null ? true : s >= finalSeq))
+    .reverse(); // newest first
+
+  let tried = 0;
+  for (const seq of candidates) {
+    if (tried >= lookback) break;
+    tried++;
     try {
       const proof = await getStatValidation(fixtureId, seq, statKeys);
+      if (verifyProofChain(proof) === "mismatch") continue; // inconsistent record
       return { proof, seq };
     } catch {
-      // 404 = not anchored yet; keep walking back.
+      // 404 = not anchored yet; keep walking back (never past full-time).
     }
   }
   return null;

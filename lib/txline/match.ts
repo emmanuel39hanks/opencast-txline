@@ -88,8 +88,13 @@ export function parseMatch(
   home: string,
   away: string,
   p1IsHome: boolean,
-  records: Rec[],
+  rawRecords: Rec[],
 ): MatchData {
+  // The snapshot array is NOT chronologically ordered — sort by Seq before
+  // reading "latest" state or building the timeline.
+  const records = [...rawRecords].sort(
+    (a, b) => Number(a?.Seq ?? 0) - Number(b?.Seq ?? 0),
+  );
   const last = records[records.length - 1] ?? {};
   const withStats = [...records].reverse().find((r) => r?.Stats) ?? {};
   const S = (withStats.Stats ?? {}) as Record<string, number>;
