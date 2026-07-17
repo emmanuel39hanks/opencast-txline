@@ -28,7 +28,7 @@ const ROWS: Row[] = [
     matchup: "Opening Match — Mexico v. USA",
     tone: "soft",
     cta: "Predict",
-    href: "/markets?category=worldcup&q=opener",
+    href: "/markets",
   },
   {
     id: "fr-br",
@@ -37,7 +37,7 @@ const ROWS: Row[] = [
     matchup: "France v. Brazil",
     tone: "soft",
     cta: "Predict",
-    href: "/markets?category=worldcup&q=france-brazil",
+    href: "/markets?search=France",
   },
   {
     id: "ar-pt",
@@ -46,7 +46,7 @@ const ROWS: Row[] = [
     matchup: "Argentina v. Portugal",
     tone: "soft",
     cta: "Predict",
-    href: "/markets?category=worldcup&q=argentina-portugal",
+    href: "/markets?search=Argentina",
   },
   {
     id: "es-de",
@@ -55,7 +55,7 @@ const ROWS: Row[] = [
     matchup: "Spain v. Germany",
     tone: "soft",
     cta: "Predict",
-    href: "/markets?category=worldcup&q=spain-germany",
+    href: "/markets?search=Spain",
   },
   {
     id: "r32",
@@ -64,7 +64,7 @@ const ROWS: Row[] = [
     matchup: "Round of 32",
     tone: "blue",
     cta: "All R32 markets",
-    href: "/markets?category=worldcup&q=round-of-32",
+    href: "/markets",
   },
   {
     id: "r16",
@@ -73,7 +73,7 @@ const ROWS: Row[] = [
     matchup: "Round of 16",
     tone: "blue",
     cta: "All R16 markets",
-    href: "/markets?category=worldcup&q=round-of-16",
+    href: "/markets",
   },
   {
     id: "final",
@@ -82,7 +82,7 @@ const ROWS: Row[] = [
     matchup: "The Final",
     tone: "navy",
     cta: "Predict the final",
-    href: "/markets?category=worldcup&q=final",
+    href: "/markets?search=final",
   },
 ];
 

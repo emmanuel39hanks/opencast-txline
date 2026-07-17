@@ -16,7 +16,7 @@ export function WorldCupFinalCta() {
 
       <div className="relative mx-auto max-w-3xl">
         <span className="punt-sticker -rotate-3 border-punt-ink/80 bg-punt-paper text-punt-ink">
-          Whistle in 30 days
+          The final settles on-chain
         </span>
         <h2 className="mt-6 text-5xl font-bold leading-[0.95] tracking-tight text-punt-ink sm:text-7xl">
           Pick your moment.
@@ -28,7 +28,7 @@ export function WorldCupFinalCta() {
 
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           <Link
-            href="/markets?category=worldcup"
+            href="/markets"
             className="rounded-pill bg-punt-ink px-7 py-3.5 text-base font-extrabold text-punt-paper transition-transform hover:-translate-y-0.5"
           >
             Browse World Cup markets

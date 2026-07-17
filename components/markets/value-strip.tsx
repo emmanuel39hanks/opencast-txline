@@ -25,13 +25,13 @@ export function ValueStrip() {
         body="Every result carries a TxLINE Merkle proof — re-verify it on-chain."
       />
       <ValueCard
-        href="/why/agents"
+        href="/why/data"
         Icon={IconActivity}
         title="Real-Time World Cup Data"
         body="Live scores and events, straight from the TxLINE feed."
       />
       <ValueCard
-        href="/why/cross-chain"
+        href="/why/settlement"
         Icon={IconLink}
         title="Trustless Settlement"
         body="Funds release on Solana the moment the proof checks out."

@@ -73,7 +73,7 @@ export function WorldCupHero() {
             transition={{ duration: 0.4, delay: 0.15 }}
             className="mt-7 max-w-xl text-base font-medium text-punt-ink/65 sm:text-lg"
           >
-            32 teams. 64 markets. 1 verifiable trophy. Every result settles
+            48 teams. 104 matches. 1 verifiable trophy. Every result settles
             trustlessly on Solana against TxLINE&apos;s on-chain proof.
           </motion.p>
 
@@ -84,7 +84,7 @@ export function WorldCupHero() {
             className="mt-8 flex flex-wrap gap-3"
           >
             <Link
-              href="/markets?category=worldcup"
+              href="/markets"
               className="inline-flex items-center gap-2 rounded-pill bg-punt-ink px-6 py-3.5 text-sm font-extrabold text-punt-paper transition-transform hover:-translate-y-0.5 sm:text-base"
             >
               Browse markets
@@ -111,7 +111,7 @@ export function WorldCupHero() {
             </span>
             <span className="inline-flex items-center gap-1.5">
               <IconTrendUp size={13} variant="Linear" color="#0A0A0A" />
-              Live AI market makers
+              Live TxLINE match data
             </span>
             <span className="inline-flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
@@ -192,7 +192,7 @@ function FeaturedCard() {
         </div>
 
         <Link
-          href="/markets?category=worldcup"
+          href="/markets"
           className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-pill bg-punt-ink py-3 text-sm font-extrabold text-punt-paper transition-transform hover:-translate-y-0.5"
         >
           Trade this market

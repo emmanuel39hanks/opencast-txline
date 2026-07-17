@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { WORLDCUP_OPENING_ISO } from "@/lib/worldcup-data";
+import { WORLDCUP_FINAL_ISO } from "@/lib/worldcup-data";
 
 /**
  * Full-width countdown band. NYNJ-inspired structure (oversized
@@ -13,10 +13,10 @@ import { WORLDCUP_OPENING_ISO } from "@/lib/worldcup-data";
  * hydration mismatch.
  */
 export function CountdownBand() {
-  const [t, setT] = React.useState(() => diff(WORLDCUP_OPENING_ISO));
+  const [t, setT] = React.useState(() => diff(WORLDCUP_FINAL_ISO));
 
   React.useEffect(() => {
-    const id = setInterval(() => setT(diff(WORLDCUP_OPENING_ISO)), 1000);
+    const id = setInterval(() => setT(diff(WORLDCUP_FINAL_ISO)), 1000);
     return () => clearInterval(id);
   }, []);
 
@@ -27,7 +27,7 @@ export function CountdownBand() {
 
       <div className="relative mx-auto flex max-w-5xl flex-col items-center text-center">
         <span className="text-[10px] font-extrabold uppercase tracking-[0.3em] text-punt-paper/70">
-          Kickoff in
+          The final kicks off in
         </span>
         <div
           className="mt-5 flex items-baseline justify-center gap-3 font-black tabular-nums sm:gap-6"
@@ -46,7 +46,7 @@ export function CountdownBand() {
           <Slot value={t.seconds} label="Sec" />
         </div>
         <p className="mt-8 max-w-md border-t border-punt-paper/25 pt-4 text-xs font-bold uppercase tracking-[0.25em] text-punt-paper/75">
-          Until the World Cup kickoff
+          Until the last proof settles the trophy
         </p>
       </div>
     </section>

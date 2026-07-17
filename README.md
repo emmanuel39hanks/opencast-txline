@@ -54,7 +54,14 @@ re-verify.
 - **Custom check gate:** before settling or displaying a proof we
   *independently recompute* its Merkle chain (plain sha256 pair-hashing,
   verified against known roots — see `lib/txline/merkle.ts`); proofs that
-  don't reconcile are refused.
+  don't reconcile are refused. This caught a real inconsistent proof in
+  production (fixture 17926647, seq 87 — its `subTreeProof` folds to a root
+  that contradicts its own summary).
+- **Deterministic proof selection** (`lib/txline/proof.ts`): TxLINE score
+  snapshots arrive in arbitrary order, so the keeper sorts by `Seq`, only
+  accepts records at/after the full-time marker (`game_finalised` /
+  GamePhase `F`/`FET`/`FPE`), and takes the newest anchored record that
+  passes the check gate — settlement can never fire on a provisional score.
 - **Receipts:** `/verify/[fixtureId]` shows the scoreboard, the exact stat
   leaves, the named scorers/cards (from lineups + PlayerStats), the full
   hash path to the on-chain root, and explorer links.
@@ -80,6 +87,21 @@ re-verify.
   parlays, treasury). Test USDC mint + faucet.
 - **AI drafting:** 0G inference router (`lib/zerog/`) maps plain English to a
   deterministic, provable predicate — never to an unprovable market.
+
+## Devnet limitations (honest notes)
+
+- **Kickoff locks are enforced at the app layer**, not on-chain: the market
+  account doesn't store the fixture's kickoff timestamp, so the program
+  can't reject a post-kickoff `place_prediction`/`place_parlay` itself. The
+  UI and APIs refuse ended fixtures; a production build would store
+  `kickoff_ts` at create time and clock-check it in the program.
+- **A few early markets settled against provisional records** before the
+  keeper required final-whistle proofs (TxLINE snapshots arrive unordered —
+  see Feedback). Their receipts display the true full-time proof alongside
+  the immutable on-chain outcome and say exactly what happened; the
+  settlement path can no longer reproduce this.
+- 2% fee is withheld per-claim and accrues in each market vault;
+  `collect_fees` for the residue is roadmap.
 
 ## Run locally
 

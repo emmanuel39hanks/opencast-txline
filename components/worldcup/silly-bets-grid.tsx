@@ -27,7 +27,7 @@ export function SillyBetsGrid() {
         <div>
           <span className="punt-sticker -rotate-2 border-punt-ink/80 bg-punt-paper text-punt-ink">
             <IconFlash size={12} variant="Linear" color="#0A0A0A" />
-            64 markets · 1 trophy
+            104 matches · 1 trophy
           </span>
           <h2 className="mt-4 text-3xl font-bold tracking-tight text-punt-ink sm:text-4xl">
             Predict the chaos.
@@ -72,7 +72,7 @@ function BetCard({ bet }: { bet: (typeof WORLDCUP_BETS)[number] }) {
   const noPct = 100 - yesPct;
   return (
     <Link
-      href={`/markets?category=worldcup&q=${encodeURIComponent(bet.question)}`}
+      href={`/markets?search=${encodeURIComponent(bet.question)}`}
       className={cn(
         "group flex h-full flex-col rounded-2xl p-5 transition-all hover:-translate-y-1",
         tint.bg,

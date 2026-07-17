@@ -35,7 +35,7 @@ export function BuiltDifferent() {
     <div>
       <SectionHeading
         eyebrow="Why it's different"
-        title="A bookmaker with nobody behind the counter."
+        title="A prediction market with nobody behind the counter."
       />
       <div>
         {rows.map((r, i) => (
