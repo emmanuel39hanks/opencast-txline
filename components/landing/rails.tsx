@@ -30,7 +30,7 @@ export function Rails() {
       <div className="mt-10 grid gap-10 md:grid-cols-2 md:gap-0 md:divide-x md:divide-punt-paper/10">
         {/* Solana */}
         <div className="md:pr-10">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/landing/solana-logo.png" alt="Solana" className="h-7 w-7" />
             <span className="text-2xl font-black tracking-tight">Solana</span>
@@ -49,7 +49,7 @@ export function Rails() {
 
         {/* TxODDS / TxLINE */}
         <div className="md:pl-10">
-          <div className="flex items-center gap-3">
+          <div className="flex flex-wrap items-center gap-3">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src="/landing/txline-logo-white.svg" alt="TxLINE" className="h-7" />
             <span className="rounded-pill bg-punt-paper/10 px-2.5 py-1 text-[10px] font-extrabold uppercase tracking-wider text-punt-paper/60">

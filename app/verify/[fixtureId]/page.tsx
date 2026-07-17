@@ -10,6 +10,7 @@ import { ArrowLeft, Check, Copy, ExternalLink, RefreshCw } from "lucide-react";
 import { IconShield } from "@/lib/icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { teamFlagUrl } from "@/lib/teams";
+import { receiptEquation } from "@/lib/hooks/useReceipt";
 import { cn } from "@/lib/utils";
 
 const TXORACLE = "6pW64gN1s2uqjHkn1unFeEjAwJkPGHoppGvS715wyP2J";
@@ -30,8 +31,17 @@ interface VerifyResponse {
   marketPda?: string | null;
   marketStatus?: string | null;
   marketOutcome?: string | null;
+  settleTxSig?: string | null;
+  dailyRootPda?: string | null;
+  score?: { home: number; away: number; final: boolean } | null;
   marketsOnFixture?: number;
   predicate?: string;
+  predicateParts?: {
+    statKeyA: number;
+    statKeyB: number;
+    threshold: number;
+    comparison: number;
+  };
   statKeys?: number[];
   namedStats?: { key: number; label: string; value: number }[];
   impliedOutcome?: "Yes" | "No" | null;
@@ -287,10 +297,24 @@ function VerifyInner({ fixtureId }: { fixtureId: string }) {
                 {data.question}
               </h2>
               {data.predicate && (
-                <p className="mt-2 rounded-2xl bg-punt-cream/60 px-3.5 py-2.5 font-mono text-xs font-bold leading-relaxed text-punt-ink/75">
+                <p className="mt-2 break-words rounded-2xl bg-punt-cream/60 px-3.5 py-2.5 font-mono text-xs font-bold leading-relaxed text-punt-ink/75">
                   {data.predicate}
                 </p>
               )}
+
+              {/* The settlement math, with the proven values plugged in —
+                  this is literally what the chain computes. */}
+              {(() => {
+                const eq = receiptEquation(data);
+                return eq ? (
+                  <div className="mt-2 overflow-x-auto rounded-2xl bg-punt-ink px-3.5 py-2.5 font-mono text-xs font-bold text-punt-lime">
+                    {eq}
+                    {data.impliedOutcome
+                      ? `  →  ${data.impliedOutcome.toUpperCase()}`
+                      : ""}
+                  </div>
+                ) : null;
+              })()}
 
               {/* Proven values */}
               {(data.namedStats?.length ?? 0) > 0 && (
@@ -441,17 +465,52 @@ function VerifyInner({ fixtureId }: { fixtureId: string }) {
               />
               <ChainStep
                 n={5}
-                title="Root checked on Solana"
-                value="txoracle · validate_stat_v2"
-                sub={
-                  pm
-                    ? `${pm.mainTreeHashes} final ${pm.mainTreeHashes === 1 ? "hash" : "hashes"} — the chain recomputes the root; settlement can only pay what it confirms`
+                title="Root anchored on Solana"
+                value={
+                  data.dailyRootPda
+                    ? shorten(data.dailyRootPda)
+                    : "txoracle · validate_stat_v2"
+                }
+                mono={Boolean(data.dailyRootPda)}
+                copy={
+                  data.dailyRootPda
+                    ? () => copy(data.dailyRootPda!)
                     : undefined
                 }
-                href={`https://explorer.solana.com/address/${TXORACLE}?cluster=devnet`}
+                sub={
+                  pm
+                    ? `${pm.mainTreeHashes} final ${pm.mainTreeHashes === 1 ? "hash" : "hashes"} into the day's root account — the chain recomputes it via validate_stat_v2; settlement can only pay what it confirms`
+                    : undefined
+                }
+                href={`https://explorer.solana.com/address/${data.dailyRootPda ?? TXORACLE}?cluster=devnet`}
                 last
               />
             </ol>
+
+            {/* The settlement transaction itself — the moment the proof paid. */}
+            {settled && data.settleTxSig && (
+              <a
+                href={`https://explorer.solana.com/tx/${data.settleTxSig}?cluster=devnet`}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 flex items-center justify-between gap-3 rounded-2xl bg-punt-ink px-4 py-3 transition-transform hover:-translate-y-0.5"
+              >
+                <span className="flex min-w-0 items-center gap-2.5">
+                  <span className="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-punt-lime">
+                    <Check className="h-3.5 w-3.5 text-punt-ink" strokeWidth={3} />
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block text-xs font-extrabold text-punt-paper">
+                      Settlement transaction
+                    </span>
+                    <span className="block truncate font-mono text-[10px] font-medium text-punt-paper/50">
+                      {data.settleTxSig}
+                    </span>
+                  </span>
+                </span>
+                <ExternalLink className="h-3.5 w-3.5 shrink-0 text-punt-paper/50" />
+              </a>
+            )}
           </div>
 
           {/* ── Match timeline (recorded events) ────────────────────── */}
@@ -496,6 +555,40 @@ function VerifyInner({ fixtureId }: { fixtureId: string }) {
           <div className="grid grid-cols-2 gap-3">
             <RefCard label="TxLINE oracle" addr={TXORACLE} />
             <RefCard label="Settlement program" addr={SETTLEMENT} />
+          </div>
+
+          {/* Don't trust us — recompute it. */}
+          <div className="rounded-card border border-punt-ink/8 bg-punt-paper p-4 sm:p-5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-punt-ink/45">
+                Don&apos;t trust us — check it yourself
+              </span>
+              <button
+                type="button"
+                onClick={() => downloadProof(data)}
+                className="rounded-pill border border-punt-ink/15 bg-punt-paper px-3.5 py-1.5 text-xs font-bold text-punt-ink transition-colors hover:bg-punt-ink/5"
+              >
+                Download proof JSON
+              </button>
+            </div>
+            <p className="mt-2.5 text-xs font-medium leading-relaxed text-punt-ink/60">
+              The whole scheme is plain sha256 pair-hashing — no special
+              tooling. Download the proof and re-derive the sub-tree root in
+              ~10 lines; if a single byte of the score were different, the
+              hashes wouldn&apos;t reconcile:
+            </p>
+            <pre className="mt-3 overflow-x-auto rounded-xl bg-punt-ink p-4 text-[11px] leading-relaxed text-punt-paper/90">{`const { createHash } = require("crypto");
+const p = require("./proof.json");
+let h = Buffer.from(p.eventStatRoot);
+for (const n of p.subTreeProof) {
+  const s = Buffer.from(n.hash);
+  h = createHash("sha256")
+    .update(n.isRightSibling ? Buffer.concat([h, s]) : Buffer.concat([s, h]))
+    .digest();
+}
+console.log(
+  h.equals(Buffer.from(p.summary.eventStatsSubTreeRoot))
+    ? "proof reconciles ✓" : "MISMATCH");`}</pre>
           </div>
 
           <details className="rounded-card border border-punt-ink/8 bg-punt-paper p-5">
@@ -674,4 +767,17 @@ function fmtTime(ts: number): string {
     hour: "2-digit",
     minute: "2-digit",
   });
+}
+
+/** Save the raw TxLINE proof as proof.json — pairs with the verify snippet. */
+function downloadProof(data: VerifyResponse) {
+  const blob = new Blob([JSON.stringify(data.proof, null, 2)], {
+    type: "application/json",
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `proof-${data.fixtureId ?? "fixture"}-seq${data.seq ?? 0}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
 }

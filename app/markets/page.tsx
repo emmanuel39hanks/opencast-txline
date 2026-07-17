@@ -124,7 +124,7 @@ function MarketsPageInner() {
                 (openCount === 0 ? " · all settled" : "")}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/parlays/new"
             className="inline-flex items-center gap-1.5 rounded-pill bg-punt-ink px-4 py-2 text-sm font-extrabold text-punt-paper transition-transform hover:-translate-y-0.5"

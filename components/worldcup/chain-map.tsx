@@ -34,7 +34,7 @@ export function ChainMap() {
           </ul>
         </div>
 
-        <div className="grid grid-cols-3 gap-5 rounded-3xl bg-punt-cream/60 p-6 sm:p-8">
+        <div className="grid grid-cols-3 gap-2 sm:gap-5 rounded-3xl bg-punt-cream/60 p-6 sm:p-8">
           <Tile>
             <Wordmark>TxLINE</Wordmark>
             <Caption>Data + proofs</Caption>

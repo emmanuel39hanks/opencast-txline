@@ -5,9 +5,11 @@ import {
   getStatValidation,
   isFinal,
 } from "@/lib/txline/client";
-import { findAnchoredProof } from "@/lib/txline/proof";
+import { findAnchoredProof, dailyScoresRootPda } from "@/lib/txline/proof";
+import { parseMatch } from "@/lib/txline/match";
 import { statKeyLabel, describePredicate } from "@/lib/txline/predicate";
 import { verifyProofChain } from "@/lib/txline/merkle";
+import { TXORACLE_PROGRAM_ID } from "@/lib/solana/server";
 import { prisma } from "@/lib/db";
 
 export const runtime = "nodejs";
@@ -153,6 +155,34 @@ export async function GET(
         statHashes + (p.subTreeProof?.length ?? 0) + (p.mainTreeProof?.length ?? 0),
     };
 
+    // Final scoreboard for receipts — parsed from the same sequenced records
+    // the proof commits to, so the score shown is the score proven.
+    const homeName = fx ? (fx.Participant1IsHome ? p1 : p2) : p1;
+    const awayName = fx ? (fx.Participant1IsHome ? p2 : p1) : p2;
+    let score: { home: number; away: number; final: boolean } | null = null;
+    if (scores.length) {
+      const md = parseMatch(
+        fid,
+        homeName,
+        awayName,
+        fx?.Participant1IsHome ?? true,
+        scores as unknown as never[],
+      );
+      score = { home: md.goals[0], away: md.goals[1], final: md.final };
+    }
+
+    // The exact on-chain account the proof's daily root is anchored in —
+    // the most concrete "don't trust us" link we can offer.
+    let dailyRootPda: string | null = null;
+    try {
+      const ts = Number(p.summary?.updateStats?.minTimestamp);
+      if (Number.isFinite(ts) && ts > 0) {
+        dailyRootPda = dailyScoresRootPda(ts, TXORACLE_PROGRAM_ID).toBase58();
+      }
+    } catch {
+      /* cosmetic only */
+    }
+
     return NextResponse.json({
       available: true,
       fixtureId: fid,
@@ -161,6 +191,7 @@ export async function GET(
       // Match context
       home: fx ? (fx.Participant1IsHome ? p1 : p2) : null,
       away: fx ? (fx.Participant1IsHome ? p2 : p1) : null,
+      score,
       // Market context
       question: dbm?.question ?? null,
       yesLabel: dbm?.yesLabel ?? null,
@@ -168,12 +199,17 @@ export async function GET(
       marketPda: dbm?.marketPda ?? null,
       marketStatus: dbm?.status ?? null,
       marketOutcome: dbm?.outcome ?? null,
+      settleTxSig: dbm?.settleTxSig ?? null,
+      dailyRootPda,
       marketsOnFixture: dbms.filter((m) => m.marketPda).length,
       predicate: describePredicate(
         { statKeyA, statKeyB, threshold, comparison },
         p1,
         p2,
       ),
+      // Raw predicate parts so the UI can show the settlement math as an
+      // equation, not just prose.
+      predicateParts: { statKeyA, statKeyB, threshold, comparison },
       statKeys,
       namedStats,
       impliedOutcome,

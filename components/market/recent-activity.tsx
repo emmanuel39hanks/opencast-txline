@@ -49,16 +49,16 @@ export function RecentActivity({
         {trades.map((t, i) => (
           <div
             key={`${t.wallet}-${t.ts}-${i}`}
-            className="flex items-center gap-3 rounded-xl px-2 py-1.5 text-sm hover:bg-punt-cream/40"
+            className="flex min-w-0 items-center gap-2 rounded-xl px-2 py-1.5 text-sm hover:bg-punt-cream/40 sm:gap-3"
           >
             <Avatar address={t.wallet} size={22} />
             <span className="font-mono text-xs font-bold text-punt-ink/60">
               {shortAddress(t.wallet, 4)}
             </span>
-            <span className="text-punt-ink/40">backed</span>
+            <span className="hidden text-punt-ink/40 sm:inline">backed</span>
             <span
               className={cn(
-                "rounded-pill px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide",
+                "max-w-[7rem] truncate rounded-pill px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide",
                 t.side === 1
                   ? "bg-punt-lime-soft text-punt-ink"
                   : "bg-rose-100 text-rose-700",
@@ -69,7 +69,7 @@ export function RecentActivity({
             <span className="font-mono text-sm font-extrabold tabular-nums text-punt-ink">
               ${formatMoney(t.amountUsdc)}
             </span>
-            <span className="ml-auto text-[11px] font-medium text-punt-ink/35">
+            <span className="ml-auto shrink-0 text-[11px] font-medium text-punt-ink/35">
               {formatTimeAgo(t.ts)}
             </span>
           </div>

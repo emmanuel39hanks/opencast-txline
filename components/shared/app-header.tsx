@@ -69,7 +69,7 @@ export function AppHeader() {
 
         <SearchBar />
 
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="ml-auto flex items-center gap-2 sm:gap-4">
           {connecting ? (
             /* Session hydrating — neutral placeholders, no signed-out flash */
             <>
@@ -92,6 +92,11 @@ export function AppHeader() {
             </button>
           )}
         </div>
+      </div>
+
+      {/* Mobile search — its own row; the inline bar is desktop-only */}
+      <div className="px-4 pb-2 md:hidden">
+        <SearchBar mobile />
       </div>
 
       {/* Category nav — second row, same sticky unit */}
@@ -164,7 +169,7 @@ function CategoryNav() {
 
 // ─── Search ────────────────────────────────────────────────────────────────
 
-function SearchBar() {
+function SearchBar({ mobile = false }: { mobile?: boolean }) {
   const router = useRouter();
   const pathname = usePathname();
   const params = useSearchParams();
@@ -181,8 +186,10 @@ function SearchBar() {
   }, [pathname, params]);
 
   // "/" keyboard shortcut to focus the search input — Polymarket UX hint.
+  // (Desktop instance only — the mobile row must not steal the shortcut.)
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
+      if (mobile) return;
       if (e.key !== "/" || e.metaKey || e.ctrlKey) return;
       const target = e.target as HTMLElement | null;
       if (target && ["INPUT", "TEXTAREA"].includes(target.tagName)) return;
@@ -200,7 +207,10 @@ function SearchBar() {
   };
 
   return (
-    <form onSubmit={onSubmit} className="hidden flex-1 md:block">
+    <form
+      onSubmit={onSubmit}
+      className={mobile ? "block md:hidden" : "hidden flex-1 md:block"}
+    >
       <div className="group relative mx-auto max-w-xl">
         <input
           ref={inputRef}
@@ -228,7 +238,7 @@ function SearchBar() {
           >
             <X className="h-3.5 w-3.5" strokeWidth={2.5} />
           </button>
-        ) : (
+        ) : mobile ? null : (
           <kbd className="pointer-events-none absolute right-3.5 top-1/2 grid h-5 w-5 -translate-y-1/2 place-items-center rounded-md bg-punt-ink/[0.05] font-mono text-[10px] font-bold text-punt-ink/40 group-focus-within:opacity-0">
             /
           </kbd>

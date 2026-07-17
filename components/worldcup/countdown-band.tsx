@@ -21,7 +21,7 @@ export function CountdownBand() {
   }, []);
 
   return (
-    <section className="relative overflow-hidden rounded-card bg-cup-blue px-6 py-16 text-punt-paper sm:py-20">
+    <section className="relative overflow-hidden rounded-card bg-cup-blue px-4 py-14 text-punt-paper sm:px-6 sm:py-20">
       {/* Top + bottom decorative chevrons cut from the band edges */}
       <BandEdges />
 
@@ -30,9 +30,9 @@ export function CountdownBand() {
           The final kicks off in
         </span>
         <div
-          className="mt-5 flex items-baseline justify-center gap-3 font-black tabular-nums sm:gap-6"
+          className="mt-5 flex items-baseline justify-center gap-2 font-black tabular-nums sm:gap-6"
           style={{
-            fontSize: "clamp(56px, 11vw, 160px)",
+            fontSize: "clamp(34px, 11vw, 160px)",
             letterSpacing: "-0.04em",
             lineHeight: 0.9,
           }}

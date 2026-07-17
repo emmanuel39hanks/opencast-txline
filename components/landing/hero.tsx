@@ -51,7 +51,7 @@ export function Hero() {
         >
           <h1 className="text-4xl font-black leading-[1.02] tracking-tight text-punt-paper sm:text-6xl">
             Call the game.{" "}
-            <span className="relative inline-block whitespace-nowrap">
+            <span className="relative inline-block whitespace-normal sm:whitespace-nowrap">
               The proof pays out.
               <svg
                 className="absolute -bottom-1.5 left-0 h-2.5 w-full sm:-bottom-2.5 sm:h-3.5"

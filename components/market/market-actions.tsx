@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 import { useWallet } from "@/lib/wallet";
 import { useSettlement } from "@/lib/solana/client";
+import { useReceipt } from "@/lib/hooks/useReceipt";
 import { cn, formatMoney } from "@/lib/utils";
 import { IconArrowRight, IconShield } from "@/lib/icons";
 import type { Market } from "@/lib/types";
@@ -267,14 +268,7 @@ export function MarketActions({
         )
       ) : resolved ? (
         <div className="mt-4 space-y-3">
-          <div className="rounded-2xl bg-punt-ink p-4 text-center text-punt-paper">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-punt-paper/55">
-              Settled trustlessly
-            </div>
-            <div className="mt-1 text-xl font-black">
-              {outcome === "Yes" ? yesLabel : noLabel} won
-            </div>
-          </div>
+          <SettledVerdict market={market} outcome={outcome} />
 
           {position === undefined ? (
             <div className="h-12 w-full animate-pulse rounded-pill bg-punt-ink/5" />
@@ -543,6 +537,67 @@ function Panel({ children }: { children: React.ReactNode }) {
   return (
     <div className="rounded-card border border-punt-ink/8 bg-punt-paper p-5">
       {children}
+    </div>
+  );
+}
+
+/**
+ * The settled banner, written so every settle type reads instantly:
+ * the question, a plain YES/NO answer, which side the pool paid, and the
+ * final score the outcome was proven against.
+ */
+function SettledVerdict({
+  market,
+  outcome,
+}: {
+  market: Market;
+  outcome?: string;
+}) {
+  const { data: r } = useReceipt(market);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const m = market as any;
+  const yes = outcome === "Yes";
+  const winnersLabel = yes ? (m.yesLabel ?? "Yes") : (m.noLabel ?? "No");
+  return (
+    <div className="overflow-hidden rounded-2xl bg-punt-ink text-punt-paper">
+      <div className="px-4 pt-4 pb-3.5">
+        <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-punt-paper/55">
+          <IconShield size={11} variant="Bold" color="#C9F468" />
+          Settled by TxLINE proof
+        </div>
+        <div className="mt-2 text-sm font-bold leading-snug text-punt-paper/85">
+          {market.question}
+        </div>
+        <div className="mt-2.5 flex flex-wrap items-center gap-2.5">
+          <span
+            className={cn(
+              "rounded-pill px-3 py-1 text-sm font-black uppercase tracking-wide",
+              yes ? "bg-punt-lime text-punt-ink" : "bg-rose-500 text-white",
+            )}
+          >
+            {yes ? "Yes" : "No"}
+          </span>
+          <span className="text-xs font-bold text-punt-paper/70">
+            &ldquo;{winnersLabel}&rdquo; backers split the pool.
+          </span>
+        </div>
+      </div>
+      {r?.score && (
+        <div className="flex flex-wrap items-center justify-between gap-2 border-t border-punt-paper/10 bg-punt-paper/5 px-4 py-2.5 text-xs font-bold">
+          <span className="text-punt-paper/65">
+            {r.home ?? m.home} {r.score.home}&thinsp;–&thinsp;{r.score.away}{" "}
+            {r.away ?? m.away}
+            {r.score.final && (
+              <span className="ml-1.5 text-punt-paper/35">Full-time</span>
+            )}
+          </span>
+          {r.independentCheck === "recomputed-ok" && (
+            <span className="text-[10px] font-black uppercase tracking-wide text-punt-lime">
+              Proof verified ✓
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

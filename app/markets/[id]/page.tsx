@@ -78,7 +78,7 @@ export default function MarketDetailPage() {
       </button>
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
+        <div className="order-2 space-y-6 lg:order-none lg:col-span-2">
           {/* Header card */}
           <div className="rounded-card border border-punt-ink/8 bg-punt-paper p-6">
             <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-punt-ink/45">
@@ -159,8 +159,8 @@ export default function MarketDetailPage() {
           <VerifiableResolutionCard market={market} />
         </div>
 
-        {/* Actions (desktop sticky) */}
-        <div className="lg:block">
+        {/* Actions — first on mobile (primary CTA), sticky right rail on desktop */}
+        <div className="order-1 lg:order-none lg:block">
           <div className="lg:sticky lg:top-20">
             <MarketActions market={market} onChanged={() => refetch()} />
           </div>

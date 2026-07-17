@@ -2,15 +2,25 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { Menu, X } from "lucide-react";
 import { useWallet } from "@/lib/wallet";
 import { cn } from "@/lib/utils";
 
 /**
  * Landing header. `onDark` renders the light variant so it can sit on top of
- * the full-bleed hero photo.
+ * the full-bleed hero photo. Below `md` the center nav collapses into a
+ * hamburger sheet so every destination stays reachable on phones.
  */
 export function LandingHeader({ onDark = false }: { onDark?: boolean }) {
   const { authenticated, connecting, connect } = useWallet();
+  const [open, setOpen] = React.useState(false);
+
+  const links = [
+    { href: "/markets", label: "Markets" },
+    { href: "/leaderboard", label: "Leaderboard" },
+    { href: "/parlays/new", label: "Parlays" },
+    { href: "/create", label: "Create" },
+  ];
 
   return (
     <div className="relative flex items-center justify-between px-2 py-5 sm:px-4">
@@ -28,44 +38,78 @@ export function LandingHeader({ onDark = false }: { onDark?: boolean }) {
 
       {/* Absolutely centered so it lines up with logo + CTA on every width */}
       <nav className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 items-center gap-1 md:flex">
-        <NavPill href="/markets" onDark={onDark}>Markets</NavPill>
-        <NavPill href="/leaderboard" onDark={onDark}>Leaderboard</NavPill>
-        <NavPill href="/parlays/new" onDark={onDark}>Parlays</NavPill>
-        <NavPill href="/create" onDark={onDark}>Create</NavPill>
+        {links.map((l) => (
+          <NavPill key={l.href} href={l.href} onDark={onDark}>
+            {l.label}
+          </NavPill>
+        ))}
       </nav>
 
-      {connecting ? (
-        <div
-          className={cn(
-            "h-11 w-32 animate-pulse rounded-pill",
-            onDark ? "bg-punt-paper/15" : "bg-punt-ink/[0.06]",
-          )}
-        />
-      ) : authenticated ? (
-        <Link
-          href="/markets"
-          className={cn(
-            "rounded-pill px-6 py-3 text-sm font-bold transition-transform hover:-translate-y-0.5",
-            onDark
-              ? "bg-punt-lime text-punt-ink"
-              : "bg-punt-ink text-punt-paper",
-          )}
-        >
-          Open App
-        </Link>
-      ) : (
+      <div className="flex items-center gap-2">
+        {connecting ? (
+          <div
+            className={cn(
+              "h-11 w-28 animate-pulse rounded-pill sm:w-32",
+              onDark ? "bg-punt-paper/15" : "bg-punt-ink/[0.06]",
+            )}
+          />
+        ) : authenticated ? (
+          <Link
+            href="/markets"
+            className={cn(
+              "rounded-pill px-4 py-2.5 text-sm font-bold transition-transform hover:-translate-y-0.5 sm:px-6 sm:py-3",
+              onDark
+                ? "bg-punt-lime text-punt-ink"
+                : "bg-punt-ink text-punt-paper",
+            )}
+          >
+            Open App
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={() => connect()}
+            className={cn(
+              "rounded-pill px-4 py-2.5 text-sm font-bold transition-transform hover:-translate-y-0.5 sm:px-6 sm:py-3",
+              onDark
+                ? "bg-punt-lime text-punt-ink"
+                : "bg-punt-ink text-punt-paper",
+            )}
+          >
+            Connect Wallet
+          </button>
+        )}
+
+        {/* Mobile menu toggle */}
         <button
           type="button"
-          onClick={() => connect()}
+          aria-label={open ? "Close menu" : "Open menu"}
+          onClick={() => setOpen((v) => !v)}
           className={cn(
-            "rounded-pill px-6 py-3 text-sm font-bold transition-transform hover:-translate-y-0.5",
+            "grid h-10 w-10 place-items-center rounded-pill md:hidden",
             onDark
-              ? "bg-punt-lime text-punt-ink"
-              : "bg-punt-ink text-punt-paper",
+              ? "bg-punt-paper/10 text-punt-paper"
+              : "bg-punt-ink/5 text-punt-ink",
           )}
         >
-          Connect Wallet
+          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
+      </div>
+
+      {/* Mobile nav sheet */}
+      {open && (
+        <div className="absolute inset-x-2 top-full z-50 mt-1 overflow-hidden rounded-2xl border border-punt-ink/10 bg-punt-paper shadow-[0_24px_60px_-24px_rgba(10,10,10,0.45)] md:hidden">
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              onClick={() => setOpen(false)}
+              className="block border-b border-punt-ink/[0.05] px-5 py-3.5 text-sm font-bold text-punt-ink last:border-b-0 hover:bg-punt-cream/50"
+            >
+              {l.label}
+            </Link>
+          ))}
+        </div>
       )}
     </div>
   );

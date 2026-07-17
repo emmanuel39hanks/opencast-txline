@@ -32,7 +32,7 @@ export default function ProfilePage() {
     );
 
   return (
-    <div className="space-y-6">
+    <div className="mx-auto w-full max-w-[1200px] space-y-6 px-4 py-6 sm:px-6 sm:py-8">
       <Card className="flex flex-wrap items-center gap-5 p-6">
         <Avatar name={user.displayName ?? wallet} color={user.avatarColor ?? "#666"} size={56} />
         <div className="flex-1 min-w-0">
@@ -47,7 +47,7 @@ export default function ProfilePage() {
           </p>
           {user.bio && <p className="mt-1 text-sm">{user.bio}</p>}
         </div>
-        <dl className="grid grid-cols-3 gap-6 text-left">
+        <dl className="grid w-full grid-cols-3 gap-3 text-left sm:w-auto sm:gap-6">
           <div>
             <dt className="text-xs text-muted-foreground">Markets created</dt>
             <dd className="text-xl font-semibold">{user.marketsCreated ?? 0}</dd>
