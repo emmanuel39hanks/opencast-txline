@@ -454,7 +454,8 @@ export function MarketActions({
                         const n = Number(e.target.value.replace(/[^0-9.]/g, ""));
                         setAmount(Number.isFinite(n) ? Math.max(0, n) : 0);
                       }}
-                      className="w-24 bg-transparent text-right outline-none"
+                      style={{ width: `${Math.max(1, String(amount).length)}ch` }}
+                      className="bg-transparent text-right outline-none"
                     />
                   </div>
                 </div>

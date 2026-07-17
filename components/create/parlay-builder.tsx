@@ -497,7 +497,8 @@ export function ParlayBuilder() {
                       const n = Number(e.target.value.replace(/[^0-9.]/g, ""));
                       setStake(Number.isFinite(n) ? Math.max(0, n) : 0);
                     }}
-                    className="w-20 bg-transparent text-right outline-none"
+                    style={{ width: `${Math.max(1, String(stake).length)}ch` }}
+                    className="bg-transparent text-right outline-none"
                   />
                 </div>
               </div>
