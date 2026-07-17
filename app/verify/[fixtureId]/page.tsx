@@ -212,7 +212,7 @@ function VerifyInner({ fixtureId }: { fixtureId: string }) {
             {/* Scoreboard */}
             {match ? (
               <div className="px-5 py-5">
-                <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3">
                   <TeamSide team={match.home} align="right" won={match.goals[0] > match.goals[1]} />
                   <div className="text-center">
                     <div className="font-mono text-4xl font-black tabular-nums text-punt-ink">
@@ -619,7 +619,7 @@ function TeamSide({
   const flag = teamFlagUrl(team);
   return (
     <div
-      className={`flex items-center gap-2.5 ${
+      className={`flex min-w-0 items-center gap-2.5 ${
         align === "right" ? "flex-row-reverse text-right" : "text-left"
       }`}
     >

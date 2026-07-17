@@ -306,10 +306,9 @@ function MintUsdcPill() {
     <button
       type="button"
       onClick={() => router.push("/settings#faucet")}
-      className="rounded-pill bg-punt-lime px-4 py-2.5 text-sm font-extrabold text-punt-ink transition-transform hover:-translate-y-0.5"
+      className="hidden rounded-pill bg-punt-lime px-4 py-2.5 text-sm font-extrabold text-punt-ink transition-transform hover:-translate-y-0.5 sm:inline-flex"
     >
-      <span className="hidden sm:inline">Get Test USDC</span>
-      <span className="sm:hidden">+USDC</span>
+      <span>Get Test USDC</span>
     </button>
   );
 }

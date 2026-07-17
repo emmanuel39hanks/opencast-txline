@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* One stray wide element must never give the whole page a horizontal
+   scrollbar on phones — inner scrollers opt in with overflow-x-auto. */
+body {
+  overflow-x: clip;
+}
+
 /**
  * Palette — "Punt" (Helvetica Rounded LT Std brand language)
  *
