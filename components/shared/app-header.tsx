@@ -12,6 +12,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import {
+  IconShield,
   IconWallet,
   IconTrendUp,
   IconCoin,
@@ -395,6 +396,7 @@ function UserMenu({
           <MenuItem href="/my-markets" Icon={IconReceipt} label="Markets I created" />
           <MenuItem href="/settings#faucet" Icon={IconCoin} label="Get test USDC" />
           <MenuItem href="/settings" Icon={IconCpu} label="Settings" />
+          <MenuItem href="/docs" Icon={IconShield} label="How it works · Docs" />
         </div>
 
         <DropdownMenuSeparator className="my-0 bg-punt-ink/[0.06]" />
