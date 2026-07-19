@@ -164,7 +164,10 @@ function MarketsPageInner() {
       ) : isLoading ? (
         <GridSkeleton />
       ) : rest.length === 0 ? (
-        <EmptyPanel hasSearch={Boolean(filters.search)} />
+        <EmptyPanel
+          hasSearch={Boolean(filters.search)}
+          category={filters.category ?? "all"}
+        />
       ) : (
         <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
           {rest.map((m) => (
@@ -314,7 +317,38 @@ function GridSkeleton() {
   );
 }
 
-function EmptyPanel({ hasSearch }: { hasSearch: boolean }) {
+function EmptyPanel({
+  hasSearch,
+  category,
+}: {
+  hasSearch: boolean;
+  category: string;
+}) {
+  // Only sports markets exist during the World Cup — other categories are
+  // announced in the nav but land here until they open.
+  const comingSoon = !hasSearch && category !== "all" && category !== "sports";
+  if (comingSoon) {
+    return (
+      <div className="mt-8 flex flex-col items-center gap-3 rounded-3xl border border-dashed border-punt-ink/15 bg-punt-paper p-12 text-center">
+        <span className="rounded-pill bg-punt-lime px-3 py-1 text-[11px] font-black uppercase tracking-wider text-punt-ink">
+          Coming soon
+        </span>
+        <p className="text-base font-bold text-punt-ink">
+          {capitalise(category)} markets are on the way.
+        </p>
+        <p className="max-w-sm text-sm font-medium text-punt-ink/55">
+          OpenCast launched with World Cup soccer — same provable settlement,
+          new data sources next.
+        </p>
+        <Link
+          href="/markets"
+          className="mt-2 rounded-pill bg-punt-ink px-5 py-2.5 text-sm font-extrabold text-punt-paper transition-transform hover:-translate-y-0.5"
+        >
+          Back to live markets →
+        </Link>
+      </div>
+    );
+  }
   return (
     <div className="mt-8 flex flex-col items-center gap-3 rounded-3xl border border-dashed border-punt-ink/15 bg-punt-paper p-12 text-center">
       <IconTrendUp size={40} variant="Linear" color="#0A0A0A" />
