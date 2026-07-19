@@ -121,7 +121,7 @@ function MarketsPageInner() {
               ? "Loading…"
               : `${markets.length} ${markets.length === 1 ? "market" : "markets"}` +
                 (liveCount ? ` · ${liveCount} live` : "") +
-                (openCount === 0 ? " · all settled" : "")}
+                (markets.length > 0 && openCount === 0 ? " · all settled" : "")}
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
