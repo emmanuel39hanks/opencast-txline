@@ -46,6 +46,40 @@ export async function GET(req: Request) {
       where: { owner },
       orderBy: { createdAt: "desc" },
     });
+
+    // Per-leg preview across all tickets: a leg's underlying market may be
+    // RESOLVED (its own proof) before the ticket finalizes — mark hit/miss.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const allLegs = rows.flatMap((r) => ((r.legs as any[]) ?? []));
+    const legPdas = [
+      ...new Set(
+        allLegs
+          .map((l) => l?.marketPda)
+          .filter((p): p is string => typeof p === "string" && p.length > 0),
+      ),
+    ];
+    const legMarkets = legPdas.length
+      ? await prisma.market.findMany({
+          where: { marketPda: { in: legPdas } },
+          select: { marketPda: true, status: true, outcome: true },
+        })
+      : [];
+    const byPda = new Map(legMarkets.map((m) => [m.marketPda!, m]));
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const enrich = (legs: any[]) =>
+      (legs ?? []).map((l) => {
+        const mk = l?.marketPda ? byPda.get(l.marketPda) : undefined;
+        return {
+          ...l,
+          result:
+            mk?.status === "RESOLVED" && mk.outcome
+              ? (mk.outcome === "YES") === (Number(l.expected) === 1)
+                ? "hit"
+                : "miss"
+              : null,
+        };
+      });
+
     const program = getServerProgram();
     const tickets = await Promise.all(
       rows.map(async (r) => {
@@ -76,7 +110,8 @@ export async function GET(req: Request) {
           idSeed: r.idSeed,
           stake: r.stake / 1e6,
           payout: r.payout / 1e6,
-          legs: r.legs,
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          legs: enrich((r.legs as any[]) ?? []),
           createdAt: r.createdAt,
           chain,
         };

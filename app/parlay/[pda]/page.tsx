@@ -20,6 +20,8 @@ interface Leg {
   pick: string;
   home: string;
   away: string;
+  /** Off-chain preview from the leg's own settled market: proof already in. */
+  result?: "hit" | "miss" | null;
 }
 interface Chain {
   stake: number;
@@ -81,7 +83,12 @@ export default function ParlayTicketPage() {
     const ev = chain ? (chain.evaluated >> i) & 1 : 0;
     const pa = chain ? (chain.passed >> i) & 1 : 0;
     if (settled) return pa ? "won" : "lost";
-    return ev ? "proven" : "pending";
+    if (ev) return "proven";
+    // The leg's underlying market may already be settled by its own proof
+    // even though the ticket only finalizes once every match has ended.
+    if (legs[i]?.result === "hit") return "won";
+    if (legs[i]?.result === "miss") return "lost";
+    return "pending";
   };
 
   const settle = async () => {

@@ -855,6 +855,14 @@ function ParlaysList({
         const firstDone = doneTickets.length > 0 && i === openTickets.length;
         const legs = Array.isArray(t.legs) ? t.legs : [];
         const mult = t.stake > 0 ? Math.round((t.payout / t.stake) * 10) / 10 : 0;
+        // Live progress from each leg's own settled market (its proof is
+        // already in) — the ticket only finalizes once every match ends.
+        const hits = legs.filter(
+          (l) => (l as { result?: string | null }).result === "hit",
+        ).length;
+        const misses = legs.filter(
+          (l) => (l as { result?: string | null }).result === "miss",
+        ).length;
         const status = !t.chain
           ? { label: "Open", cls: "bg-punt-cream text-punt-ink/60" }
           : t.chain.claimed
@@ -863,7 +871,11 @@ function ParlaysList({
               ? { label: "Won — claim", cls: "bg-punt-lime text-punt-ink" }
               : t.chain.settled
                 ? { label: "Lost", cls: "bg-rose-50 text-rose-500" }
-                : { label: `${countBits(t.chain.evaluated)}/${legs.length} proven`, cls: "bg-punt-cream text-punt-ink/60" };
+                : misses > 0
+                  ? { label: "Pick missed", cls: "bg-rose-50 text-rose-500" }
+                  : hits > 0
+                    ? { label: `${hits}/${legs.length} hit`, cls: "bg-punt-lime-soft text-punt-ink" }
+                    : { label: "Open", cls: "bg-punt-cream text-punt-ink/60" };
         return (
           <React.Fragment key={t.betPda}>
           {firstDone && (
@@ -917,16 +929,6 @@ function ParlaysList({
   );
 }
 
-/** Number of set bits — proven legs live in an on-chain bitmask. */
-function countBits(n: number): number {
-  let c = 0;
-  let v = n >>> 0;
-  while (v) {
-    c += v & 1;
-    v >>>= 1;
-  }
-  return c;
-}
 
 // ─── My markets ───────────────────────────────────────────────────────────
 
